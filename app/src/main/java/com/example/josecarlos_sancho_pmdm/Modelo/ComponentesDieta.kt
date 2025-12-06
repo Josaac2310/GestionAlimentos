@@ -9,64 +9,35 @@ enum class TipoComponente {
     SIMPLE,PROCESADO,MENU,RECETA,DIETA
 
 }
-
-@Entity(tableName = "ComponenteDieta")
-data class ComponenteDietaRoom(
-    @PrimaryKey(autoGenerate = true) var id: Int=0,
+data class IngredienteData(
+    var id: Int=0,
     var nombre: String ="",
-    var tipo:TipoComponente=TipoComponente.SIMPLE,
     var grHC_ini: Double=0.0,
     var grLip_ini:Double=0.0,
-    var grPro_ini:Double=0.0): Serializable {
+    var grPro_ini:Double=0.0,
+    var cantidad:Double=100.0,
+    var componenteId: Int=0
+)
 
-    var grHC: Double = 0.0
-        get() = if(tipo.esSimpleOProcesado()) grHC_ini
-        else  ingredientes.sumOf { it.cd.grHC * it.cantidad / 100 }
+data class ComponenteDietaData(
+    var id: Int=0,
+    var tipo:String="",
+    var nombre: String ="",
+    var grHC_ini: Double=0.0,
+    var grLip_ini:Double=0.0,
+    var grPro_ini:Double=0.0,
+    var ingredientes:ArrayList<IngredienteData> = arrayListOf()
+)
 
-    var grLip: Double = 0.0
-        get() =  if(tipo.esSimpleOProcesado())  grLip_ini
-        else ingredientes.sumOf { it.cd.grLip * it.cantidad / 100 }
-
-    var grPro: Double = 0.0
-        get() = if(tipo.esSimpleOProcesado())  grPro_ini
-        else ingredientes.sumOf { it.cd.grPro * it.cantidad / 100 }
-
-    var cantidadTotal: Double = 0.0
-        get() =if(tipo.esSimpleOProcesado())  100.0
-        else ingredientes.sumOf { it.cd.cantidadTotal * it.cantidad / 100 }
-
-
-    val Kcal: Double
-        get() = (4 * grHC) + (4 * grPro) + (9 * grLip)
-
-    fun getKcalMenu(): Double{
-        var total: Double = 0.0
-        for (i in ingredientes){
-            total += i.cd.Kcal * i.cantidad
-        }
-        return total
-    }
-
-
-    val ingredientes: MutableList<Ingrediente> = mutableListOf()
-
-    fun TipoComponente.esSimpleOProcesado() = this == TipoComponente.SIMPLE || this == TipoComponente.PROCESADO
-
-    fun addIngrediente(ing: Ingrediente) : Boolean {
-        return if (!ingredientes.contains(ing)) {
-            ingredientes.add(ing)
-            true
-        } else false
-    }
-    fun removeIngrediente(ing: Ingrediente): Boolean  {
-        return ingredientes.remove(ing)
-    }
-
-    fun addAllIngredientes(lista:List<Ingrediente>){
-        ingredientes.addAll(lista)
-    }
-
-}
+@Entity(tableName = "ComponenteDieta")
+data class ComponenteDieta(
+    @PrimaryKey(autoGenerate = true) var id: Int = 0,
+    var tipo: String = "",
+    var nombre: String = "",
+    var grHC_ini: Double = 0.0,
+    var grLip_ini: Double = 0.0,
+    var grPro_ini: Double = 0.0
+) : Serializable
 
 @Entity(tableName = "Ingrediente",
     foreignKeys = [ForeignKey(
@@ -75,77 +46,13 @@ data class ComponenteDietaRoom(
         childColumns = ["componenteId"],
         onDelete = ForeignKey.CASCADE
     )])
-data class IngredienteRoom(
+data class Ingrediente(
     @PrimaryKey(autoGenerate = true) var id: Int=0,
-    var cd: ComponenteDieta,
+    var nombre: String ="",
+    var grHC_ini: Double=0.0,
+    var grLip_ini:Double=0.0,
+    var grPro_ini:Double=0.0,
     var cantidad:Double=100.0,
     var componenteId: Int=0
 ): Serializable
-
-data class ComponenteDieta(
-    var nombre: String ="",
-    var tipo:TipoComponente=TipoComponente.SIMPLE,
-    var grHC_ini: Double=0.0,
-    var grLip_ini:Double=0.0,
-    var grPro_ini:Double=0.0): Serializable {
-
-    var grHC: Double = 0.0
-        get() = if(tipo.esSimpleOProcesado()) grHC_ini
-        else  ingredientes.sumOf { it.cd.grHC * it.cantidad / 100 }
-
-    var grLip: Double = 0.0
-        get() =  if(tipo.esSimpleOProcesado())  grLip_ini
-        else ingredientes.sumOf { it.cd.grLip * it.cantidad / 100 }
-
-    var grPro: Double = 0.0
-        get() = if(tipo.esSimpleOProcesado())  grPro_ini
-        else ingredientes.sumOf { it.cd.grPro * it.cantidad / 100 }
-
-    var cantidadTotal: Double = 0.0
-        get() =if(tipo.esSimpleOProcesado())  100.0
-        else ingredientes.sumOf { it.cd.cantidadTotal * it.cantidad / 100 }
-
-
-    val Kcal: Double
-        get() = (4 * grHC) + (4 * grPro) + (9 * grLip)
-
-    fun getKcalMenu(): Double{
-        var total: Double = 0.0
-        for (i in ingredientes){
-            total += i.cd.Kcal * i.cantidad
-        }
-        return total
-    }
-
-
-    val ingredientes: MutableList<Ingrediente> = mutableListOf()
-
-
-    constructor() : this("",TipoComponente.SIMPLE,0.0, 0.0, 0.0)
-
-    fun TipoComponente.esSimpleOProcesado() = this == TipoComponente.SIMPLE || this == TipoComponente.PROCESADO
-
-    fun addIngrediente(ing: Ingrediente) : Boolean {
-        return if (!ingredientes.contains(ing)) {
-            ingredientes.add(ing)
-            true
-        } else false
-    }
-    fun removeIngrediente(ing: Ingrediente): Boolean  {
-        return ingredientes.remove(ing)
-    }
-
-    fun addAllIngredientes(lista:List<Ingrediente>){
-        ingredientes.addAll(lista)
-    }
-
-}
-
-
-data class Ingrediente(
-    var cd: ComponenteDieta,
-    var cantidad:Double=100.0): Serializable
-{ }
-
-
 

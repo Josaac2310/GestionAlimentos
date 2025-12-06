@@ -1,5 +1,7 @@
 package com.example.josecarlos_sancho_pmdm.Pantallas
 
+
+/*
 import android.content.Context
 import android.widget.TextView
 import android.widget.Toast
@@ -390,3 +392,4 @@ fun cardIngrediente(context: Context ,ingredientesList:ArrayList<Ingrediente>, i
         }
     }
 }
+*/
